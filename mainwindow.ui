@@ -64,13 +64,8 @@
        <item>
         <widget class="QComboBox" name="cmbDataBits">
          <property name="currentText">
-          <string>9600</string>
+          <string/>
          </property>
-         <item>
-          <property name="text">
-           <string>9600</string>
-          </property>
-         </item>
         </widget>
        </item>
       </layout>
@@ -99,13 +94,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="cmbStopBits">
-         <item>
-          <property name="text">
-           <string>8</string>
-          </property>
-         </item>
-        </widget>
+        <widget class="QComboBox" name="cmbStopBits"/>
        </item>
       </layout>
      </item>
@@ -143,7 +132,7 @@
     <property name="title">
      <string>串口接手区</string>
     </property>
-    <widget class="QTextEdit" name="textEdit">
+    <widget class="QTextEdit" name="te_receive">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -166,7 +155,7 @@
     <property name="title">
      <string>串口发送区</string>
     </property>
-    <widget class="QTextEdit" name="textEdit_2">
+    <widget class="QTextEdit" name="teSend">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -177,23 +166,10 @@
      </property>
     </widget>
    </widget>
-   <widget class="QPushButton" name="btnOpen">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>330</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>关闭串口</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="btnSend">
     <property name="geometry">
      <rect>
-      <x>160</x>
+      <x>130</x>
       <y>330</y>
       <width>75</width>
       <height>23</height>
@@ -201,6 +177,19 @@
     </property>
     <property name="text">
      <string>发送数据</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnOpen">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>330</y>
+      <width>78</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>关闭串口</string>
     </property>
    </widget>
   </widget>
