@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <QSerialPort>
+class QLabel;
+class settingsDialog;
 
 namespace Ui {
 class MainWindow;
@@ -15,18 +17,16 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    void initPort();
 
 
 private slots:
-    void on_btnOpen_clicked();
-
-    void on_btnSend_clicked();
     void Read_Data();
 
 private:
     Ui::MainWindow *ui;
-    QSerialPort *my_serialport;
+    QLabel *m_status = nullptr;
+    settingsDialog *m_settings = nullptr;
+    QSerialPort *m_serial = nullptr;
 };
 
 #endif // MAINWINDOW_H

@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QStringList>
 #include <QMessageBox>
+#include <QLabel>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -18,8 +19,4 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::initPort()
-{
-
-}
 

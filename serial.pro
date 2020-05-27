@@ -24,18 +24,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
+        settingsdialog.cpp \
         main.cpp \
-        mainwindow.cpp \
-        settingsdialog.cpp
+        mainwindow.cpp
 
 HEADERS += \
+        settingsdialog.h \
         mainwindow.h \
-        settingsdialog.h
 
 FORMS += \
-        mainwindow.ui \
-        settingsdialog.ui
+        settingsdialog.ui \
+        mainwindow.ui
 
 RESOURCES += \
     serial.qrc
-
