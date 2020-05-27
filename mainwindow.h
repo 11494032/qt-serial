@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <QSerialPort>
+#include "serialthread.h"
+
 class QLabel;
 class SettingsDialog;
 
@@ -38,6 +40,7 @@ private slots:
     void on_alarmpushButton_clicked();
 
     void on_CloseloclearalarmckpushButton_clicked();
+    void DisplayMsg(int);
 
 private:
     void initActionsConnections();
@@ -48,6 +51,7 @@ private:
     QLabel *m_status = nullptr;
     SettingsDialog *m_settings = nullptr;
     QSerialPort *m_serial = nullptr;
+    SerialThread *m_serial_thread = nullptr;
 };
 
 #endif // MAINWINDOW_H

@@ -9,6 +9,7 @@
 #include "settingsdialog.h"
 #include <QDateTime>
 
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -27,14 +28,32 @@ MainWindow::MainWindow(QWidget *parent) :
     initActionsConnections();
 
     connect(m_serial, &QSerialPort::errorOccurred, this, &MainWindow::handleError);
-    connect(m_serial, &QSerialPort::readyRead, this, &MainWindow::readData);
+    connect(m_serial, &QSerialPort::readyRead, this,&MainWindow::readData);
+
+    m_serial_thread = new SerialThread();
+
+   // connect(m_serial_thread, &SerialThread::TestSignal, this,  &MainWindow::DisplayMsg);
+
+    //执行子线程
+    m_serial_thread->start();
+   // connect(m_serial_thread, SIGNAL(&SerialThread::TestSignal(int)), this, SLOT(&MainWindow::DisplayMsg(int)));
+
+    connect(m_serial_thread,&SerialThread::TestSignal,this,&MainWindow::DisplayMsg,Qt::AutoConnection);
 
 }
+
+
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+void MainWindow::DisplayMsg(int a)
+{
+    ui->te_receive->append(QString::number(a));
+}
+
 
 //! [4]
 void MainWindow::openSerialPort()
