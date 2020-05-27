@@ -7,6 +7,7 @@
 #include <QMessageBox>
 #include <QLabel>
 #include "settingsdialog.h"
+#include <QDateTime>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -97,8 +98,11 @@ void MainWindow::writeData(const QByteArray &data)
 //! [7]
 void MainWindow::readData()
 {
+    QDateTime curDateTime=QDateTime::currentDateTime();
     const QByteArray data = m_serial->readAll();
- //   m_console->putData(data);
+    qDebug()<<"hello "<<data<<"!"<<endl;
+   // m_console->putData(data);
+    ui->te_receive->insertPlainText(data);
 }
 //! [7]
 
