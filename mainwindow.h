@@ -24,8 +24,20 @@ private slots:
     void about();
     void writeData(const QByteArray &data);
     void readData();
+    void buttonSendData();
+    void  clear();
 
     void handleError(QSerialPort::SerialPortError error);
+
+    void on_CloselockpushButton_clicked();
+
+    void on_openlockpushButton_clicked();
+
+    void on_QuerypushButton_clicked();
+
+    void on_alarmpushButton_clicked();
+
+    void on_CloseloclearalarmckpushButton_clicked();
 
 private:
     void initActionsConnections();
