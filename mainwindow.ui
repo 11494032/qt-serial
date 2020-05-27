@@ -75,7 +75,7 @@
      <string>Calls</string>
     </property>
     <addaction name="actionConnect"/>
-    <addaction name="actionDisconnet"/>
+    <addaction name="actionDisconnect"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -104,7 +104,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionConnect"/>
-   <addaction name="actionDisconnet"/>
+   <addaction name="actionDisconnect"/>
    <addaction name="actionConfigure"/>
    <addaction name="actionClear"/>
   </widget>
@@ -121,13 +121,16 @@
     <string>Ctrl+O</string>
    </property>
   </action>
-  <action name="actionDisconnet">
+  <action name="actionDisconnect">
    <property name="icon">
     <iconset resource="serial.qrc">
      <normaloff>:/images/disconnect.png</normaloff>:/images/disconnect.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;Disconnet</string>
+    <string>&amp;Disconnect</string>
+   </property>
+   <property name="toolTip">
+    <string>Disconnect</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>

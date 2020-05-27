@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QSerialPort>
 class QLabel;
-class settingsDialog;
+class SettingsDialog;
 
 namespace Ui {
 class MainWindow;
@@ -15,17 +15,26 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-
 private slots:
-    void Read_Data();
+    void openSerialPort();
+    void closeSerialPort();
+    void about();
+    void writeData(const QByteArray &data);
+    void readData();
+
+    void handleError(QSerialPort::SerialPortError error);
 
 private:
+    void initActionsConnections();
+
+private:
+    void showStatusMessage(const QString &message);
     Ui::MainWindow *ui;
     QLabel *m_status = nullptr;
-    settingsDialog *m_settings = nullptr;
+    SettingsDialog *m_settings = nullptr;
     QSerialPort *m_serial = nullptr;
 };
 
