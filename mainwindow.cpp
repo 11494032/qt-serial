@@ -30,15 +30,15 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_serial, &QSerialPort::errorOccurred, this, &MainWindow::handleError);
     connect(m_serial, &QSerialPort::readyRead, this,&MainWindow::readData);
 
-    m_serial_thread = new SerialThread();
+  //  m_serial_thread = new SerialThread();
 
    // connect(m_serial_thread, &SerialThread::TestSignal, this,  &MainWindow::DisplayMsg);
 
     //执行子线程
-    m_serial_thread->start();
+  //  m_serial_thread->start();
    // connect(m_serial_thread, SIGNAL(&SerialThread::TestSignal(int)), this, SLOT(&MainWindow::DisplayMsg(int)));
 
-    connect(m_serial_thread,&SerialThread::TestSignal,this,&MainWindow::DisplayMsg,Qt::AutoConnection);
+  //  connect(m_serial_thread,&SerialThread::TestSignal,this,&MainWindow::DisplayMsg,Qt::AutoConnection);
 
 }
 
@@ -114,8 +114,65 @@ void MainWindow::writeData(const QByteArray &data)
 
     m_serial->write(data);
 }
-static void handle_data( const QByteArray data){
 
+int asciitonum( char data ){
+    int ret = 0;
+//    qDebug()<<""<<data;
+    if( data >='0' && data <='9' )
+        ret = data-'0';
+    else if (data >='a' && data <='f') {
+        ret = data-'a'+10;
+    }
+    else if (data >='A' && data <='F') {
+        ret = data-'A'+10;
+    }
+  //   qDebug()<<"----"<<ret;
+    return ret;
+}
+
+void MainWindow:: handle_data( const QByteArray data){
+    static int rev[8] = {0,};
+    static bool is_start = false;
+    int res = 0;
+    static int index = 0;
+    for(  int i = 0; i<data.length();i += 2){
+        res = (asciitonum(data.at(i))<<4 | asciitonum(data.at(i+1)))& 0x00FF;
+        qDebug()<<"receive info:"<<data.length()<<data.at(i)<<data.at(i+1)<<res;
+        if(res == 0x5A){
+            is_start = true;
+            index = 0;
+        }
+        if(is_start){
+            rev[index]= res;
+            index++;
+        }
+        if(index >= 7 ){
+            is_start = false;
+        }
+    }
+    if(rev[5] == 0x57 )
+    {
+        if( rev[2] == 0x10 && rev[3] == 0x01){ //接收到上升指令，开始上升
+            ui->status_lineEdit->setText("关锁中");
+        }
+        else if( rev[2] == 0x10 && rev[3] == 0x02){//接收到下降指令，开始下降
+            ui->status_lineEdit->setText("开锁中");
+        }
+        else if( rev[2] == 0x10 && rev[3] == 0x11){//车位锁上升完成
+            ui->status_lineEdit->setText("锁已关");
+        }
+        else if( rev[2] == 0x10 && rev[3] == 0x22){//车位锁下降完成
+            ui->status_lineEdit->setText("锁已开");
+        }
+        else if( rev[2] == 0x20 && rev[3] == 0x00){//车位锁处于下降状态
+            ui->status_lineEdit->setText("锁处于开锁状态");
+        }
+        else if( rev[2] == 0x20 && rev[3] == 0x01){//车位锁处于上升状态
+            ui->status_lineEdit->setText("锁处于关锁状态");
+        }
+        memset(rev,0,sizeof (rev));
+        qDebug()<<"receive info success:"<<rev[2] << rev[3];
+    }
 }
 void MainWindow::readData()
 {
@@ -130,6 +187,7 @@ void MainWindow::readData()
         string.prepend(hexData);// QByteArray转QString方法2
         //qDebug()<<"receive info:"<<hexData.length();
         handle_data(hexData);
+
         ui->te_receive->insertPlainText(string);
 
     }

@@ -41,6 +41,7 @@ private slots:
 
     void on_CloseloclearalarmckpushButton_clicked();
     void DisplayMsg(int);
+    void handle_data( const QByteArray data);
 
 private:
     void initActionsConnections();
@@ -52,6 +53,7 @@ private:
     SettingsDialog *m_settings = nullptr;
     QSerialPort *m_serial = nullptr;
     SerialThread *m_serial_thread = nullptr;
+
 };
 
 #endif // MAINWINDOW_H

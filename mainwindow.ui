@@ -48,6 +48,9 @@
      <property name="text">
       <string>HEX接收</string>
      </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
     </widget>
    </widget>
    <widget class="QGroupBox" name="recvgroupBox">
@@ -129,7 +132,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="lineEdit">
+       <widget class="QLineEdit" name="status_lineEdit">
         <property name="text">
          <string>状态查询中，请稍等</string>
         </property>
