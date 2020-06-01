@@ -7,7 +7,7 @@
 
 class QLabel;
 class SettingsDialog;
-
+class Console;
 namespace Ui {
 class MainWindow;
 }
@@ -53,6 +53,7 @@ private:
     SettingsDialog *m_settings = nullptr;
     QSerialPort *m_serial = nullptr;
     SerialThread *m_serial_thread = nullptr;
+    Console *m_console = nullptr;
 
 };
 

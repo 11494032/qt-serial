@@ -24,12 +24,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
+        console.cpp \
         serialthread.cpp \
         settingsdialog.cpp \
         main.cpp \
         mainwindow.cpp
 
 HEADERS += \
+    console.h \
     serialthread.h \
         settingsdialog.h \
         mainwindow.h \

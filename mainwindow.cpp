@@ -7,6 +7,7 @@
 #include <QMessageBox>
 #include <QLabel>
 #include "settingsdialog.h"
+#include "console.h"
 #include <QDateTime>
 
 
@@ -15,7 +16,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow),
     m_status(new QLabel),
     m_settings(new SettingsDialog),
-    m_serial(new QSerialPort(this))
+    m_serial(new QSerialPort(this)),
+    m_console(new Console)
 {
     ui->setupUi(this);
 
@@ -29,7 +31,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(m_serial, &QSerialPort::errorOccurred, this, &MainWindow::handleError);
     connect(m_serial, &QSerialPort::readyRead, this,&MainWindow::readData);
-
+    connect(m_console, &Console::getData, this, &MainWindow::writeData);
   //  m_serial_thread = new SerialThread();
 
    // connect(m_serial_thread, &SerialThread::TestSignal, this,  &MainWindow::DisplayMsg);
@@ -186,8 +188,8 @@ void MainWindow::readData()
         QString string;
         string.prepend(hexData);// QByteArray转QString方法2
         //qDebug()<<"receive info:"<<hexData.length();
-        handle_data(hexData);
-
+       // handle_data(hexData);
+        m_console->putData(hexData);
         ui->te_receive->insertPlainText(string);
 
     }
