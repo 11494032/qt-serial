@@ -72,12 +72,14 @@ void MainWindow::init()
     ui->treeView->setColumnWidth(1,400);
     ui->treeView->setColumnWidth(2,400);
     ui->treeView->setColumnWidth(3,400);
-    goodsModel->setHeaderData(0, Qt::Horizontal, tr("No"));
+  /*  goodsModel->setHeaderData(0, Qt::Horizontal, tr("No"));
     goodsModel->setHeaderData(1, Qt::Horizontal, tr("测试项"));
     goodsModel->setHeaderData(2, Qt::Horizontal, tr("测试结果"));
     goodsModel->setHeaderData(3, Qt::Horizontal, tr("参考"));
+    */
     ui->treeView->setModel(goodsModel);
-
+    createSubjectModel(goodsModel);
+/*
     for (int i = 0; i < 4; ++i){
         QList<QStandardItem *> items;
         for (int i = 0; i < 3; ++i) {
@@ -101,46 +103,24 @@ void MainWindow::init()
     }
     ui->treeView->setSelectionMode(QAbstractItemView::ExtendedSelection);
     goodsModel->setData(goodsModel->index(3,3),"成功");
+    */
 }
-void addMail(QAbstractItemModel *model, const QString &subject,
-             const QString &sender, const QDateTime &date)
+void MainWindow::addSubject(int index,QStandardItemModel *model, const QString &subject)
 {
     model->insertRow(0);
-    model->setData(model->index(0, 0), subject);
-    model->setData(model->index(0, 1), sender);
-    model->setData(model->index(0, 2), date);
+    model->setData(model->index(0, 0), index);
+    model->setData(model->index(0, 1), subject);
 }
 
-QAbstractItemModel *createMailModel(QObject *parent)
+void MainWindow:: createSubjectModel( QStandardItemModel *model )
 {
-    QStandardItemModel *model = new QStandardItemModel(0, 3, parent);
+    model->setHeaderData(0, Qt::Horizontal, QObject::tr("序号"));
+    model->setHeaderData(1, Qt::Horizontal, QObject::tr("测试项"));
+    model->setHeaderData(2, Qt::Horizontal, QObject::tr("测试结果"));
+    model->setHeaderData(3, Qt::Horizontal, QObject::tr("参考"));
+    addSubject(1,model, "spiflash" );
+    addSubject(0,model, "看门狗" );
 
-    model->setHeaderData(0, Qt::Horizontal, QObject::tr("Subject"));
-    model->setHeaderData(1, Qt::Horizontal, QObject::tr("Sender"));
-    model->setHeaderData(2, Qt::Horizontal, QObject::tr("Date"));
-
-    addMail(model, "Happy New Year!", "Grace K. <grace@software-inc.com>",
-            QDateTime(QDate(2006, 12, 31), QTime(17, 03)));
-    addMail(model, "Radically new concept", "Grace K. <grace@software-inc.com>",
-            QDateTime(QDate(2006, 12, 22), QTime(9, 44)));
-    addMail(model, "Accounts", "pascale@nospam.com",
-            QDateTime(QDate(2006, 12, 31), QTime(12, 50)));
-    addMail(model, "Expenses", "Joe Bloggs <joe@bloggs.com>",
-            QDateTime(QDate(2006, 12, 25), QTime(11, 39)));
-    addMail(model, "Re: Expenses", "Andy <andy@nospam.com>",
-            QDateTime(QDate(2007, 01, 02), QTime(16, 05)));
-    addMail(model, "Re: Accounts", "Joe Bloggs <joe@bloggs.com>",
-            QDateTime(QDate(2007, 01, 03), QTime(14, 18)));
-    addMail(model, "Re: Accounts", "Andy <andy@nospam.com>",
-            QDateTime(QDate(2007, 01, 03), QTime(14, 26)));
-    addMail(model, "Sports", "Linda Smith <linda.smith@nospam.com>",
-            QDateTime(QDate(2007, 01, 05), QTime(11, 33)));
-    addMail(model, "AW: Sports", "Rolf Newschweinstein <rolfn@nospam.com>",
-            QDateTime(QDate(2007, 01, 05), QTime(12, 00)));
-    addMail(model, "RE: Sports", "Petra Schmidt <petras@nospam.com>",
-            QDateTime(QDate(2007, 01, 05), QTime(12, 01)));
-
-    return model;
 }
 void MainWindow::showClick(QModelIndex index)
 {
@@ -256,34 +236,6 @@ void MainWindow::showStatusMessage(const QString &message)
 {
     m_status->setText(message);
 }
-void MainWindow::setSourceModel(QAbstractItemModel *model)
-{
-    proxyModel->setSourceModel(model);
-    sourceView->setModel(model);
-}
 
-void MainWindow::filterRegExpChanged()
-{
-    QRegExp::PatternSyntax syntax =
-            QRegExp::PatternSyntax(filterSyntaxComboBox->itemData(
-                    filterSyntaxComboBox->currentIndex()).toInt());
-    Qt::CaseSensitivity caseSensitivity =
-            filterCaseSensitivityCheckBox->isChecked() ? Qt::CaseSensitive
-                                                       : Qt::CaseInsensitive;
 
-    QRegExp regExp(filterPatternLineEdit->text(), caseSensitivity, syntax);
-    proxyModel->setFilterRegExp(regExp);
-}
-
-void MainWindow::filterColumnChanged()
-{
-    proxyModel->setFilterKeyColumn(filterColumnComboBox->currentIndex());
-}
-
-void MainWindow::sortChanged()
-{
-    proxyModel->setSortCaseSensitivity(
-            sortCaseSensitivityCheckBox->isChecked() ? Qt::CaseSensitive
-                                                     : Qt::CaseInsensitive);
-}
 

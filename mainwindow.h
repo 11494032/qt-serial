@@ -31,6 +31,9 @@ public:
     ~MainWindow();
     void init();
     void setSourceModel(QAbstractItemModel *model);
+    void addSubject(int index,QStandardItemModel *model, const QString &subject);
+
+    void createSubjectModel( QStandardItemModel *model );
 
 private slots:
     void openSerialPort();
@@ -43,9 +46,6 @@ private slots:
     void handleError(QSerialPort::SerialPortError error);
 
     void showClick(QModelIndex index);
-    void filterRegExpChanged();
-    void filterColumnChanged();
-    void sortChanged();
 
 private:
     void initActionsConnections();
