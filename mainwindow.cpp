@@ -9,8 +9,9 @@
 #include "settingsdialog.h"
 #include "console.h"
 #include <QDateTime>
-
-
+#include <QHBoxLayout>
+#include <QLineEdit>
+#include <QtWidgets>
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -32,28 +33,90 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_serial, &QSerialPort::errorOccurred, this, &MainWindow::handleError);
     connect(m_serial, &QSerialPort::readyRead, this,&MainWindow::readData);
     connect(m_console, &Console::getData, this, &MainWindow::writeData);
-  //  m_serial_thread = new SerialThread();
-
-   // connect(m_serial_thread, &SerialThread::TestSignal, this,  &MainWindow::DisplayMsg);
-
-    //执行子线程
-  //  m_serial_thread->start();
-   // connect(m_serial_thread, SIGNAL(&SerialThread::TestSignal(int)), this, SLOT(&MainWindow::DisplayMsg(int)));
-
-  //  connect(m_serial_thread,&SerialThread::TestSignal,this,&MainWindow::DisplayMsg,Qt::AutoConnection);
-
+    init();
 }
 
 
+void MainWindow::init()
+{
+
+     /*
+        ItemModel = new QStandardItemModel(this);
+
+          QStringList strList;
+          strList.append("A");
+          strList.append("B");
+          strList.append("C");
+          strList.append("D");
+          strList.append("E");
+          strList.append("F");
+          strList.append("G");
+
+          int nCount = strList.size();
+          for(int i = 0; i < nCount; i++)
+          {
+              QString string = static_cast<QString>(strList.at(i));
+              QStandardItem *item = new QStandardItem(string);
+              ItemModel->appendRow(item);
+          }
+         ui->listView->setModel(ItemModel);
+         ui->listView->setFixedSize(200,300);
+
+         connect(ui->listView,SIGNAL(clicked(QModelIndex)),this,SLOT(showClick(QModelIndex)));
+    */
+
+    ui->treeView->setRootIsDecorated(false);
+    ui->treeView->setAlternatingRowColors(true);
+    QStandardItemModel *goodsModel = new QStandardItemModel(0, 4,this);
+    ui->treeView->setColumnWidth(0,50);
+    ui->treeView->setColumnWidth(1,400);
+    ui->treeView->setColumnWidth(2,400);
+    ui->treeView->setColumnWidth(3,400);
+    goodsModel->setHeaderData(0, Qt::Horizontal, tr("No"));
+    goodsModel->setHeaderData(1, Qt::Horizontal, tr("测试项"));
+    goodsModel->setHeaderData(2, Qt::Horizontal, tr("测试结果"));
+    goodsModel->setHeaderData(3, Qt::Horizontal, tr("参考"));
+    ui->treeView->setModel(goodsModel);
+
+    for (int i = 0; i < 4; ++i){
+        QList<QStandardItem *> items;
+        for (int i = 0; i < 3; ++i) {
+            QStandardItem *item = new QStandardItem(QString("item %0").arg(i));
+            if (0 == i)
+                item->setCheckable(true);
+            items.push_back(item);
+        }
+        goodsModel->appendRow(items);
+        for (int i = 0; i < 4; ++i)
+        {
+            QList<QStandardItem *> childItems;
+            for (int i = 0; i < 3; ++i){
+                QStandardItem *item = new QStandardItem(QString("%0").arg(i));
+                if (0 == i)
+                    item->setCheckable(true);
+                childItems.push_back(item);
+            }
+            items.at(0)->appendRow(childItems);
+        }
+    }
+    ui->treeView->setSelectionMode(QAbstractItemView::ExtendedSelection);
+}
+
+void MainWindow::showClick(QModelIndex index)
+{
+    QString strTemp;
+    strTemp = index.data().toString();
+
+    QMessageBox msg;
+    msg.setText(strTemp);
+    msg.exec();
+
+
+}
 
 MainWindow::~MainWindow()
 {
     delete ui;
-}
-
-void MainWindow::DisplayMsg(int a)
-{
-    ui->te_receive->append(QString::number(a));
 }
 
 
@@ -103,7 +166,7 @@ void MainWindow::about()
 
 void MainWindow::clear()
 {
-    ui->te_receive->clear();
+
 }
 
 void MainWindow::writeData(const QByteArray &data)
@@ -117,82 +180,16 @@ void MainWindow::writeData(const QByteArray &data)
     m_serial->write(data);
 }
 
-int asciitonum( char data ){
-    int ret = 0;
-//    qDebug()<<""<<data;
-    if( data >='0' && data <='9' )
-        ret = data-'0';
-    else if (data >='a' && data <='f') {
-        ret = data-'a'+10;
-    }
-    else if (data >='A' && data <='F') {
-        ret = data-'A'+10;
-    }
-  //   qDebug()<<"----"<<ret;
-    return ret;
-}
 
-void MainWindow:: handle_data( const QByteArray data){
-    static int rev[8] = {0,};
-    static bool is_start = false;
-    int res = 0;
-    static int index = 0;
-    for(  int i = 0; i<data.length();i += 2){
-        res = (asciitonum(data.at(i))<<4 | asciitonum(data.at(i+1)))& 0x00FF;
-        qDebug()<<"receive info:"<<data.length()<<data.at(i)<<data.at(i+1)<<res;
-        if(res == 0x5A){
-            is_start = true;
-            index = 0;
-        }
-        if(is_start){
-            rev[index]= res;
-            index++;
-        }
-        if(index >= 7 ){
-            is_start = false;
-        }
-    }
-    if(rev[5] == 0x57 )
-    {
-        if( rev[2] == 0x10 && rev[3] == 0x01){ //接收到上升指令，开始上升
-            ui->status_lineEdit->setText("关锁中");
-        }
-        else if( rev[2] == 0x10 && rev[3] == 0x02){//接收到下降指令，开始下降
-            ui->status_lineEdit->setText("开锁中");
-        }
-        else if( rev[2] == 0x10 && rev[3] == 0x11){//车位锁上升完成
-            ui->status_lineEdit->setText("锁已关");
-        }
-        else if( rev[2] == 0x10 && rev[3] == 0x22){//车位锁下降完成
-            ui->status_lineEdit->setText("锁已开");
-        }
-        else if( rev[2] == 0x20 && rev[3] == 0x00){//车位锁处于下降状态
-            ui->status_lineEdit->setText("锁处于开锁状态");
-        }
-        else if( rev[2] == 0x20 && rev[3] == 0x01){//车位锁处于上升状态
-            ui->status_lineEdit->setText("锁处于关锁状态");
-        }
-        memset(rev,0,sizeof (rev));
-        qDebug()<<"receive info success:"<<rev[2] << rev[3];
-    }
-}
 void MainWindow::readData()
 {
-    QDateTime curDateTime=QDateTime::currentDateTime();
     const QByteArray data = m_serial->readAll();
-    if( !ui->hexRecvcheckBox->isChecked() ){
-        ui->te_receive->insertPlainText(data);
-    }
-    else if( ui->hexRecvcheckBox->isChecked() ){
-        QByteArray hexData = data.toHex();
-        QString string;
-        string.prepend(hexData);// QByteArray转QString方法2
-        //qDebug()<<"receive info:"<<hexData.length();
-       // handle_data(hexData);
-        m_console->putData(hexData);
-        ui->te_receive->insertPlainText(string);
+    QByteArray hexData = data.toHex();
+    QString string;
+    string.prepend(hexData);// QByteArray转QString方法2
+    m_console->putData(hexData);
 
-    }
+
 }
 
 void MainWindow::handleError(QSerialPort::SerialPortError error)
@@ -212,7 +209,6 @@ void MainWindow::initActionsConnections()
     connect(ui->actionConfigure, &QAction::triggered, m_settings, &SettingsDialog::show);
     connect(ui->actionClear, &QAction::triggered, this, &MainWindow::clear);
     connect(ui->actionAbout, &QAction::triggered, this, &MainWindow::about);
-    connect(ui->sendpushButton, &QPushButton::pressed,this,&MainWindow::buttonSendData);
 
 }
 
@@ -220,97 +216,34 @@ void MainWindow::showStatusMessage(const QString &message)
 {
     m_status->setText(message);
 }
-
-
-
-
-void MainWindow::buttonSendData()
+void MainWindow::setSourceModel(QAbstractItemModel *model)
 {
-
-    QString sendStr = ui->teSend->toPlainText();
-
-    if( ui->hexsendcheckBox->isChecked() == false){
-        for(int i = 0;i < sendStr.length();++i){
-            QChar t = sendStr.at(i);
-             qDebug()<<"hello "<<t<<"!"<<endl;
-        }
-         m_serial->write(sendStr.toLocal8Bit());
-    }
-   else if( ui->hexsendcheckBox->isChecked()){
-
-            if (sendStr.contains(" "))
-
-            {
-
-                sendStr.replace(QString(" "),QString(""));//把空格去掉
-
-            }
-
-            qDebug()<<"Write to serial: "<<sendStr;
-            //转换成16进制发送
-
-            QByteArray sendBuf = QByteArray::fromHex(sendStr.toLatin1());
-             m_serial->write(sendBuf);
-    }
+    proxyModel->setSourceModel(model);
+    sourceView->setModel(model);
 }
 
-
-void MainWindow::on_CloselockpushButton_clicked()
+void MainWindow::filterRegExpChanged()
 {
-    QByteArray array;
-    array[0] = 0x5A;
-    array[1] = 0x00;
-    array[2] = 0x01;
-    array[3] = 0x01;
-    array[4] = 0x00;
-    array[5] = 0x57;
-  this->writeData(array);
+    QRegExp::PatternSyntax syntax =
+            QRegExp::PatternSyntax(filterSyntaxComboBox->itemData(
+                    filterSyntaxComboBox->currentIndex()).toInt());
+    Qt::CaseSensitivity caseSensitivity =
+            filterCaseSensitivityCheckBox->isChecked() ? Qt::CaseSensitive
+                                                       : Qt::CaseInsensitive;
+
+    QRegExp regExp(filterPatternLineEdit->text(), caseSensitivity, syntax);
+    proxyModel->setFilterRegExp(regExp);
 }
 
-void MainWindow::on_openlockpushButton_clicked()
+void MainWindow::filterColumnChanged()
 {
-    QByteArray array;
-    array[0] = 0x5A;
-    array[1] = 0x00;
-    array[2] = 0x01;
-    array[3] = 0x02;
-    array[4] = 0x00;
-    array[5] = 0x57;
-   this->writeData(array);
+    proxyModel->setFilterKeyColumn(filterColumnComboBox->currentIndex());
 }
 
-void MainWindow::on_QuerypushButton_clicked()
+void MainWindow::sortChanged()
 {
-    QByteArray array;
-    array[0] = 0x5A;
-    array[1] = 0x00;
-    array[2] = 0x02;
-    array[3] = 0x01;
-    array[4] = 0x00;
-    array[5] = 0x57;
-   this->writeData(array);
+    proxyModel->setSortCaseSensitivity(
+            sortCaseSensitivityCheckBox->isChecked() ? Qt::CaseSensitive
+                                                     : Qt::CaseInsensitive);
 }
 
-void MainWindow::on_alarmpushButton_clicked()
-{
-    QByteArray array;
-    array[0] = 0x5A;
-    array[1] = 0x00;
-    array[2] = 0x01;
-    array[3] = 0x03;
-    array[4] = 0x00;
-    array[5] = 0x57;
-   this->writeData(array);
-}
-
-void MainWindow::on_CloseloclearalarmckpushButton_clicked()
-{
-    QByteArray array;
-    array[0] = 0x5A;
-    array[1] = 0x00;
-    array[2] = 0x01;
-    array[3] = 0x04;
-    array[4] = 0x00;
-    array[5] = 0x57;
-   this->writeData(array);
-}

@@ -3,11 +3,21 @@
 
 #include <QMainWindow>
 #include <QSerialPort>
+#include <QStringListModel>
+#include <QStandardItemModel>
+#include <QModelIndex>
 #include "serialthread.h"
+#include <QAbstractItemModel>
+#include <QCheckBox>
+#include <QComboBox>
+#include <QSortFilterProxyModel>
+#include <QTreeView>
+#include <QLabel>
+#include <QGroupBox>
 
-class QLabel;
 class SettingsDialog;
 class Console;
+
 namespace Ui {
 class MainWindow;
 }
@@ -19,6 +29,8 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    void init();
+    void setSourceModel(QAbstractItemModel *model);
 
 private slots:
     void openSerialPort();
@@ -26,27 +38,17 @@ private slots:
     void about();
     void writeData(const QByteArray &data);
     void readData();
-    void buttonSendData();
-    void  clear();
+    void clear();
 
     void handleError(QSerialPort::SerialPortError error);
 
-    void on_CloselockpushButton_clicked();
-
-    void on_openlockpushButton_clicked();
-
-    void on_QuerypushButton_clicked();
-
-    void on_alarmpushButton_clicked();
-
-    void on_CloseloclearalarmckpushButton_clicked();
-    void DisplayMsg(int);
-    void handle_data( const QByteArray data);
+    void showClick(QModelIndex index);
+    void filterRegExpChanged();
+    void filterColumnChanged();
+    void sortChanged();
 
 private:
     void initActionsConnections();
-
-private:
     void showStatusMessage(const QString &message);
     Ui::MainWindow *ui;
     QLabel *m_status = nullptr;
@@ -54,7 +56,23 @@ private:
     QSerialPort *m_serial = nullptr;
     SerialThread *m_serial_thread = nullptr;
     Console *m_console = nullptr;
+    QStringListModel *Model = nullptr;
+    QStandardItemModel *ItemModel = nullptr;
 
+    QSortFilterProxyModel *proxyModel;
+
+    QGroupBox *sourceGroupBox;
+    QGroupBox *proxyGroupBox;
+    QTreeView *sourceView;
+    QTreeView *proxyView;
+    QCheckBox *filterCaseSensitivityCheckBox;
+    QCheckBox *sortCaseSensitivityCheckBox;
+    QLabel *filterPatternLabel;
+    QLabel *filterSyntaxLabel;
+    QLabel *filterColumnLabel;
+    QLineEdit *filterPatternLineEdit;
+    QComboBox *filterSyntaxComboBox;
+    QComboBox *filterColumnComboBox;
 };
 
 #endif // MAINWINDOW_H
