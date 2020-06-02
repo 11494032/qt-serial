@@ -23,7 +23,7 @@ int Console::asciitonum( char data ){
 }
 
 void Console:: handle_data( const QByteArray data){
-    static int rev[8] = {0,};
+    static int rev[128] = {0,};
     static bool is_start = false;
     int res = 0;
     static int index = 0;

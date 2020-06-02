@@ -64,7 +64,7 @@ void MainWindow::init()
 
          connect(ui->listView,SIGNAL(clicked(QModelIndex)),this,SLOT(showClick(QModelIndex)));
     */
-
+    ui->treeView->setEditTriggers(0);
     ui->treeView->setRootIsDecorated(false);
     ui->treeView->setAlternatingRowColors(true);
     QStandardItemModel *goodsModel = new QStandardItemModel(0, 4,this);
