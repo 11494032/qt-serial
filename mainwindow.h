@@ -47,6 +47,9 @@ private slots:
     void handleError(QSerialPort::SerialPortError error);
 
     void showClick(QModelIndex index);
+    void wdtPushbutton();
+    void spiPushbutton();
+    void radarPushbutton();
 
 private:
     void initActionsConnections();

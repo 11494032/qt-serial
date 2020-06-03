@@ -12,6 +12,7 @@
 #include <QHBoxLayout>
 #include <QLineEdit>
 #include <QtWidgets>
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -33,9 +34,27 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_serial, &QSerialPort::errorOccurred, this, &MainWindow::handleError);
     connect(m_serial, &QSerialPort::readyRead, this,&MainWindow::readData);
     connect(m_console, &Console::getData, this, &MainWindow::writeData);
-
+    connect(ui->wdtPushButton, &QPushButton::clicked,this,&MainWindow::wdtPushbutton);
+    connect(ui->spiPushButton, &QPushButton::clicked,this,&MainWindow::spiPushbutton);
+    connect(ui->radarPushButton, &QPushButton::clicked,this,&MainWindow::radarPushbutton);
     init();
 }
+
+void MainWindow::wdtPushbutton(  ){
+    QMessageBox::warning(this, tr("wdt "),
+                       tr("WDT"));
+}
+
+void MainWindow::spiPushbutton(){
+    QMessageBox::warning(this, tr("spi "),
+                       tr("spi"));
+}
+
+void MainWindow::radarPushbutton(){
+    QMessageBox::warning(this, tr("spi "),
+                       tr("spi"));
+}
+
 
 
 void MainWindow::init()
