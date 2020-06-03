@@ -32,6 +32,7 @@ public:
     void init();
     void setSourceModel(QAbstractItemModel *model);
     void addSubject(int index,QStandardItemModel *model, const QString &subject);
+    void addParamItem(int row, int col,QStandardItemModel *model, const QString &desc);
 
     void createSubjectModel( QStandardItemModel *model );
 

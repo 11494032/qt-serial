@@ -33,83 +33,35 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_serial, &QSerialPort::errorOccurred, this, &MainWindow::handleError);
     connect(m_serial, &QSerialPort::readyRead, this,&MainWindow::readData);
     connect(m_console, &Console::getData, this, &MainWindow::writeData);
+
     init();
 }
 
 
 void MainWindow::init()
 {
-
-     /*
-        ItemModel = new QStandardItemModel(this);
-
-          QStringList strList;
-          strList.append("A");
-          strList.append("B");
-          strList.append("C");
-          strList.append("D");
-          strList.append("E");
-          strList.append("F");
-          strList.append("G");
-
-          int nCount = strList.size();
-          for(int i = 0; i < nCount; i++)
-          {
-              QString string = static_cast<QString>(strList.at(i));
-              QStandardItem *item = new QStandardItem(string);
-              ItemModel->appendRow(item);
-          }
-         ui->listView->setModel(ItemModel);
-         ui->listView->setFixedSize(200,300);
-
-         connect(ui->listView,SIGNAL(clicked(QModelIndex)),this,SLOT(showClick(QModelIndex)));
-    */
     ui->treeView->setEditTriggers(0);
     ui->treeView->setRootIsDecorated(false);
     ui->treeView->setAlternatingRowColors(true);
     QStandardItemModel *goodsModel = new QStandardItemModel(0, 4,this);
-    ui->treeView->setColumnWidth(0,50);
+    ui->treeView->setColumnWidth(0,100);
     ui->treeView->setColumnWidth(1,400);
     ui->treeView->setColumnWidth(2,400);
     ui->treeView->setColumnWidth(3,400);
-  /*  goodsModel->setHeaderData(0, Qt::Horizontal, tr("No"));
-    goodsModel->setHeaderData(1, Qt::Horizontal, tr("测试项"));
-    goodsModel->setHeaderData(2, Qt::Horizontal, tr("测试结果"));
-    goodsModel->setHeaderData(3, Qt::Horizontal, tr("参考"));
-    */
+
     ui->treeView->setModel(goodsModel);
     createSubjectModel(goodsModel);
-/*
-    for (int i = 0; i < 4; ++i){
-        QList<QStandardItem *> items;
-        for (int i = 0; i < 3; ++i) {
-            QStandardItem *item = new QStandardItem(QString("item %0").arg(i));
-            if (0 == i)
-                item->setCheckable(true);
-            items.push_back(item);
-        }
-        goodsModel->appendRow(items);
-        for (int i = 0; i < 4; ++i)
-        {
-            QList<QStandardItem *> childItems;
-            for (int i = 0; i < 3; ++i){
-                QStandardItem *item = new QStandardItem(QString("%0").arg(i));
-                if (0 == i)
-                    item->setCheckable(true);
-                childItems.push_back(item);
-            }
-            items.at(0)->appendRow(childItems);
-        }
-    }
-    ui->treeView->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    goodsModel->setData(goodsModel->index(3,3),"成功");
-    */
 }
-void MainWindow::addSubject(int index,QStandardItemModel *model, const QString &subject)
+void MainWindow::addSubject(int row,QStandardItemModel *model, const QString &subject)
 {
-    model->insertRow(0);
-    model->setData(model->index(0, 0), index);
-    model->setData(model->index(0, 1), subject);
+    model->insertRow(row);
+    model->setData(model->index(row, 0), row);
+    model->setData(model->index(row, 1), subject);
+}
+
+void MainWindow::addParamItem(int row, int col,QStandardItemModel *model, const QString &desc)
+{
+    model->setData(model->index(row, col), desc);
 }
 
 void MainWindow:: createSubjectModel( QStandardItemModel *model )
@@ -118,8 +70,10 @@ void MainWindow:: createSubjectModel( QStandardItemModel *model )
     model->setHeaderData(1, Qt::Horizontal, QObject::tr("测试项"));
     model->setHeaderData(2, Qt::Horizontal, QObject::tr("测试结果"));
     model->setHeaderData(3, Qt::Horizontal, QObject::tr("参考"));
-    addSubject(1,model, "spiflash" );
+
     addSubject(0,model, "看门狗" );
+    addSubject(1,model, "spiflash" );
+  //  addParamItem(1,2,model,"成功");
 
 }
 void MainWindow::showClick(QModelIndex index)
