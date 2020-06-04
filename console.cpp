@@ -123,6 +123,36 @@ void Console:: handle_data( const QByteArray data){
             byte = QByteArray((char *)rev+3,rev[3]);
            emit stringSignal(7,byte);
        }
+       else if(rev[1] == 0x02 && rev[2] == 0x04){ //WRITEsn
+           if( rev[4] == 0x01){ //success
+               emit TestSignal(40,1);
+           }
+           else if( rev[4] == 0x02){ //failed
+               emit TestSignal(40,2);
+           }
+       }
+       else if(rev[1] == 0x02 && rev[2] == 0x04){ //read sn
+           QByteArray byte;
+           byte = QByteArray((char *)rev+3,rev[3]);
+           emit stringSignal(41,byte);
+
+       }
+       else if(rev[1] == 0x02 && rev[2] == 0x04){ //WRITE imei
+           if( rev[4] == 0x01){ //success
+               emit TestSignal(42,1);
+           }
+           else if( rev[4] == 0x02){ //failed
+               emit TestSignal(42,2);
+           }
+       }
+       else if(rev[1] == 0x02 && rev[2] == 0x04){ //WRITE imei
+           if( rev[4] == 0x01){ //success
+               emit TestSignal(43,1);
+           }
+           else if( rev[4] == 0x02){ //failed
+               emit TestSignal(43,2);
+           }
+       }
        qDebug("re:%x %x\n",rev[1],rev[2]);
         memset(rev,0,sizeof (rev));
     }

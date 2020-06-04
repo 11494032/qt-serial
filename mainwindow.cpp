@@ -67,6 +67,9 @@ void MainWindow::interfaceStringShow(int i,QString data){
              }
          addParamItem(7,2,goodsModel,temp2);
    }
+  else if( i == 41 ){
+          ui->readSNlineEdit->setText(data);
+  }
 }
 void MainWindow::interfaceShow(int i,long data){
   // qDebug("signeal:%x %lx\n",i,data);
@@ -101,6 +104,34 @@ void MainWindow::interfaceShow(int i,long data){
    else if( i == 62 ){
             addParamItem(6,2,goodsModel,"联网失败，失败原因："+QString::number(data));
    }
+   else if( i == 40 ){
+           if(data ==1 ){
+             ui->writeSnlineEdit->setText("SN写成功");
+           }
+           if(data ==2 ){
+             ui->writeSnlineEdit->setText("SN写失败");
+           //  ui->writeSnlineEdit->setStyleSheet("color:red");
+           }
+   }
+   else if( i == 42 ){
+           if(data ==1 ){
+             ui->writeImeilineEdit->setText("imei写成功");
+           }
+           if(data ==2 ){
+             ui->writeImeilineEdit->setText("imei写失败");
+           //  ui->writeSnlineEdit->setStyleSheet("color:red");
+           }
+   }
+   else if( i == 43 ){
+           if(data ==1 ){
+             ui->worklineEdit->setText("模式写成功");
+           }
+           if(data ==2 ){
+             ui->worklineEdit->setText("模式写失败");
+           //  ui->writeSnlineEdit->setStyleSheet("color:red");
+           }
+   }
+
 
 }
 
@@ -349,9 +380,104 @@ void MainWindow::showStatusMessage(const QString &message)
 void MainWindow::on_writeSNPushButton_clicked()
 {
    QByteArray writedata;
+
    QString data = ui->writeSnlineEdit->text();
 
    QByteArray bytes = data.toLatin1();
    //qDebug("signeal:%x %x\n",bytes.at(0),bytes.at(1));
  //  writeData()
+   if( bytes.size() != 16){
+        ui->writeSnlineEdit->setText("数据长度错误");
+       return;
+   }
+   int length = bytes.size();
+   writedata.resize(6+length);
+   writedata[5+bytes.size()] = 0;
+   writedata[0] = 0xAC;
+   writedata[1] = 0x03;
+   writedata[2] = 0x03;
+   writedata[3] = bytes.size();
+
+   for( int i = 0; i < bytes.size(); i++ ){
+        writedata[4+i] = bytes.at(i);
+        writedata[5+length] = ( writedata[5+length]^writedata[4+i]);
+   }
+   writedata[4+length] = (writedata[5+length]^writedata[1]^writedata[2]^writedata[3]);
+   writedata[5+length] = 0xCC;
+   this->writeData(writedata);
+}
+
+void MainWindow::on_readSnpushButton_clicked()
+{
+    QByteArray data;
+    data.resize(7);
+    data[0] = 0xAC;
+    data[1] = 0x03;
+    data[2] = 0x03;
+    data[3] = 0x01;
+    data[4] = 0x01;
+    data[5] = 0x00;
+    data[6] = 0xCC;
+    this->writeData(data);
+}
+
+void MainWindow::on_writeImeipushButton_clicked()
+{
+    QByteArray writedata;
+
+    QString data = ui->writeImeilineEdit->text();
+    if(data.isEmpty() ){
+        ui->writeImeilineEdit->setText("数据长度错误");
+        return;
+    }
+    QByteArray bytes = data.toLatin1();
+    //qDebug("signeal:%x %x\n",bytes.at(0),bytes.at(1));
+  //  writeData()
+    if( bytes.size() != 16){
+         ui->writeImeilineEdit->setText("数据长度错误");
+        return;
+    }
+    int length = bytes.size();
+    writedata.resize(6+length);
+    writedata[5+bytes.size()] = 0;
+    writedata[0] = 0xAC;
+    writedata[1] = 0x03;
+    writedata[2] = 0x03;
+    writedata[3] = bytes.size();
+
+    for( int i = 0; i < bytes.size(); i++ ){
+         writedata[4+i] = bytes.at(i);
+         writedata[5+length] = ( writedata[5+length]^writedata[4+i]);
+    }
+    writedata[4+length] = (writedata[5+length]^writedata[1]^writedata[2]^writedata[3]);
+    writedata[5+length] = 0xCC;
+    this->writeData(writedata);
+}
+
+void MainWindow::on_workpushButton_clicked()
+{
+    QByteArray writedata;
+
+    QString data = ui->worklineEdit->text();
+    if(data.isEmpty() ){
+        ui->worklineEdit->setText("数据长度错误");
+        return;
+    }
+    QByteArray bytes = data.toLatin1();
+    //qDebug("signeal:%x %x\n",bytes.at(0),bytes.at(1));
+  //  writeData()
+    if( ( bytes.size() != 1 || ( bytes.at(0) != 0x32 && bytes.at(0) != 0x33) )){
+         ui->worklineEdit->setText("数据内容错误只能写2/3");
+        return;
+    }
+    writedata.resize(7);
+    writedata[5+bytes.size()] = 0;
+    writedata[0] = 0xAC;
+    writedata[1] = 0x03;
+    writedata[2] = 0x03;
+    writedata[3] = 0x01;
+    writedata[4] = ( bytes.at(0) - '0');
+    writedata[5] = (writedata[1]^writedata[2]^writedata[3]^writedata[4]);
+    writedata[6] = 0xCC;
+    this->writeData(writedata);
 }

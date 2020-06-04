@@ -58,6 +58,12 @@ private slots:
 
     void on_writeSNPushButton_clicked();
 
+    void on_readSnpushButton_clicked();
+
+    void on_writeImeipushButton_clicked();
+
+    void on_workpushButton_clicked();
+
 private:
     void initActionsConnections();
     void showStatusMessage(const QString &message);
