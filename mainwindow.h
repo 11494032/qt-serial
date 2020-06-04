@@ -50,6 +50,13 @@ private slots:
     void wdtPushbutton();
     void spiPushbutton();
     void radarPushbutton();
+    void beerPushbutton();
+    void iccidPushbutton();
+    void macPushbutton();
+    void interfaceShow(int i,long data);
+    void interfaceStringShow(int i,QString data);
+
+    void on_writeSNPushButton_clicked();
 
 private:
     void initActionsConnections();
@@ -77,6 +84,8 @@ private:
     QLineEdit *filterPatternLineEdit;
     QComboBox *filterSyntaxComboBox;
     QComboBox *filterColumnComboBox;
+
+    QStandardItemModel *goodsModel;
 };
 
 #endif // MAINWINDOW_H

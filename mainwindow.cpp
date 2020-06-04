@@ -23,6 +23,12 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    QFile file("blue.qss");
+    file.open(QFile::ReadOnly);
+    QTextStream filetext(&file);
+    QString stylesheet = filetext.readAll();
+    this->setStyleSheet(stylesheet);
+    file.close();
     ui->actionConnect->setEnabled(true);
     ui->actionDisconnect->setEnabled(false);
     ui->actionQuit->setEnabled(true);
@@ -37,32 +43,149 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->wdtPushButton, &QPushButton::clicked,this,&MainWindow::wdtPushbutton);
     connect(ui->spiPushButton, &QPushButton::clicked,this,&MainWindow::spiPushbutton);
     connect(ui->radarPushButton, &QPushButton::clicked,this,&MainWindow::radarPushbutton);
+    connect(ui->beerPushButton, &QPushButton::clicked,this,&MainWindow::beerPushbutton);
+    connect(ui->iccidPushButton, &QPushButton::clicked,this,&MainWindow::iccidPushbutton);
+    connect(ui->macPushButton, &QPushButton::clicked,this,&MainWindow::macPushbutton);
+    connect(m_console, &Console::TestSignal, this, &MainWindow::interfaceShow);
+    connect(m_console, &Console::stringSignal, this, &MainWindow::interfaceStringShow);
+
     init();
+}
+void MainWindow::interfaceStringShow(int i,QString data){
+   //qDebug("signeal:%x %s\n",i,(char)data);
+  if( i == 5 ){ //iccid
+
+         addParamItem(5,2,goodsModel,data);
+   }
+  if( i == 7 ){ //
+
+         QByteArray temp1 = data.toLatin1().toHex();
+         QByteArray temp2;
+             for(int i = 0; i < temp1.length()/2;i++)
+             {
+                 temp2 += temp1.mid(i*2,2) + "-";
+             }
+         addParamItem(7,2,goodsModel,temp2);
+   }
+}
+void MainWindow::interfaceShow(int i,long data){
+  // qDebug("signeal:%x %lx\n",i,data);
+   if( i == 0 ){ //看门狗
+    ui->startlabel->setText("开始测试");
+    addParamItem(0,2,goodsModel,"成功");
+   }
+   else if( i == 1 && data == 0){ //看门狗
+    addParamItem(1,2,goodsModel,"成功");
+   // goodsModel->item(0, 2)->setForeground(QBrush(QColor(255, 0, 0)));
+   }
+   else if( i == 2 ){ //spi
+       if( data == 0){
+            addParamItem(2,2,goodsModel,"成功");
+       }
+       else{
+       addParamItem(2,2,goodsModel,"失败");
+        goodsModel->item(0, 2)->setForeground(QBrush(QColor(255, 0, 0)));
+       }
+   }
+   else if( i == 4 && data > 0){
+            addParamItem(4,2,goodsModel,QString::number(data));
+
+   }
+   else if( i == 6 && data > 0){
+            if(data == 1)
+            addParamItem(6,2,goodsModel,"联网中");
+   }
+   else if( i == 61 ){
+            addParamItem(6,2,goodsModel,"联网成功，信号值："+QString::number(data));
+   }
+   else if( i == 62 ){
+            addParamItem(6,2,goodsModel,"联网失败，失败原因："+QString::number(data));
+   }
+
 }
 
 void MainWindow::wdtPushbutton(  ){
-    QMessageBox::warning(this, tr("wdt "),
-                       tr("WDT"));
+    QByteArray data;
+    data[0] = 0xAC;
+    data[1] = 0x02;
+    data[2] = 0x01;
+    data[3] = 0x01;
+    data[4] = 0x01;
+    data[5] = 0x03;
+    data[6] = 0xCC;
+    this->writeData(data);
 }
 
 void MainWindow::spiPushbutton(){
-    QMessageBox::warning(this, tr("spi "),
-                       tr("spi"));
+    QByteArray data;
+    data.resize(7);
+    data[0] = 0xAC;
+    data[1] = 0x02;
+    data[2] = 0x02;
+    data[3] = 0x01;
+    data[4] = 0x01;
+    data[5] = 0x00;
+    data[6] = 0xCC;
+    this->writeData(data);
 }
 
 void MainWindow::radarPushbutton(){
-    QMessageBox::warning(this, tr("spi "),
-                       tr("spi"));
+    QByteArray data;
+    data.resize(7);
+    data[0] = 0xAC;
+    data[1] = 0x02;
+    data[2] = 0x04;
+    data[3] = 0x01;
+    data[4] = 0x01;
+    data[5] = 0x06;
+    data[6] = 0xCC;
+    this->writeData(data);
 }
 
+void MainWindow::beerPushbutton(){
+    QByteArray data;
+    data.resize(7);
+    data[0] = 0xAC;
+    data[1] = 0x02;
+    data[2] = 0x03;
+    data[3] = 0x01;
+    data[4] = 0x01;
+    data[5] = 0x01;
+    data[6] = 0xCC;
+    this->writeData(data);
+}
 
+void MainWindow::iccidPushbutton(){
+    QByteArray data;
+    data.resize(7);
+    data[0] = 0xAC;
+    data[1] = 0x02;
+    data[2] = 0x06;
+    data[3] = 0x01;
+    data[4] = 0x01;
+    data[5] = 0x04;
+    data[6] = 0xCC;
+    this->writeData(data);
+}
+void MainWindow::macPushbutton(){
+    QByteArray data;
+    data.resize(7);
+    data[0] = 0xAC;
+    data[1] = 0x03;
+    data[2] = 0x03;
+    data[3] = 0x01;
+    data[4] = 0x01;
+    data[5] = 0x00;
+    data[6] = 0xCC;
+    this->writeData(data);
+}
 
 void MainWindow::init()
 {
     ui->treeView->setEditTriggers(0);
     ui->treeView->setRootIsDecorated(false);
     ui->treeView->setAlternatingRowColors(true);
-    QStandardItemModel *goodsModel = new QStandardItemModel(0, 4,this);
+    goodsModel = new QStandardItemModel(0, 4,this);
     ui->treeView->setColumnWidth(0,100);
     ui->treeView->setColumnWidth(1,400);
     ui->treeView->setColumnWidth(2,400);
@@ -90,9 +213,15 @@ void MainWindow:: createSubjectModel( QStandardItemModel *model )
     model->setHeaderData(2, Qt::Horizontal, QObject::tr("测试结果"));
     model->setHeaderData(3, Qt::Horizontal, QObject::tr("参考"));
 
-    addSubject(0,model, "看门狗" );
-    addSubject(1,model, "spiflash" );
-  //  addParamItem(1,2,model,"成功");
+    addSubject(0,model, "RS485测试" );
+    addSubject(1,model, "看门狗" );
+    addSubject(2,model, "spiflash" );
+    addSubject(3,model, "蜂鸣器" );
+    addSubject(4,model, "雷达测试" );
+    addSubject(5,model, "ICCID" );
+    addSubject(6,model, "网络质量" );
+    addSubject(7,model, "蓝牙MAC" );
+    addParamItem(6,3,goodsModel,"03H :联网失败：读卡失败; \n04H :联网失败：SOCKET失败;\n05H :联网失败：连接失败");
 
 }
 void MainWindow::showClick(QModelIndex index)
@@ -159,6 +288,10 @@ void MainWindow::about()
 
 void MainWindow::clear()
 {
+    ui->startlabel->clear();
+    for( int i = 0; i<8; i++){
+        addParamItem(i,2,goodsModel,"");
+    }
 
 }
 
@@ -212,3 +345,13 @@ void MainWindow::showStatusMessage(const QString &message)
 
 
 
+
+void MainWindow::on_writeSNPushButton_clicked()
+{
+   QByteArray writedata;
+   QString data = ui->writeSnlineEdit->text();
+
+   QByteArray bytes = data.toLatin1();
+   //qDebug("signeal:%x %x\n",bytes.at(0),bytes.at(1));
+ //  writeData()
+}

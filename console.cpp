@@ -22,48 +22,108 @@ int Console::asciitonum( char data ){
     return ret;
 }
 
+unsigned char crc(unsigned char * buf,int size){
+    unsigned char sum = 0;
+    for( int i = 0; i<size; i++){
+        sum ^=buf[i];
+    }
+    return sum;
+}
+
 void Console:: handle_data( const QByteArray data){
-    static int rev[128] = {0,};
+    //AC 03 03 01 01 00 CC
+    static unsigned char rev[512] = {0,};
     static bool is_start = false;
+    static bool is_end = false;
     int res = 0;
     static int index = 0;
+  //  qDebug("length:%d\n",data.length());
     for(  int i = 0; i<data.length();i += 2){
         res = (this->asciitonum(data.at(i))<<4 | this->asciitonum(data.at(i+1)))& 0x00FF;
-        qDebug()<<"receive info:"<<data.length()<<data.at(i)<<data.at(i+1)<<res;
-        if(res == 0x5A){
+       // qDebug()<<"receive info:"<<data.length()<<data.at(i)<<data.at(i+1)<<res<<endl;
+      //  qDebug("Test:%x %x %x %x\n",data.length(),data.at(i),data.at(i+1),res);
+        if(res == 0xAC){
             is_start = true;
             index = 0;
         }
         if(is_start){
             rev[index]= res;
+           // qDebug("Test:%x\n",rev[index]);
             index++;
+            // qDebug()<<"data:"<< rev[index]<<endl;
+
         }
-        if(index >= 7 ){
-            is_start = false;
+
+        if(res == 0xCC ){
+            is_end = true;
         }
     }
-    if(rev[5] == 0x57 )
+    if(is_start && is_end)
     {
-        if( rev[2] == 0x10 && rev[3] == 0x01){ //接收到上升指令，开始上升
+ #if 0
+    addSubject(0,model, "RS485测试" );
+    addSubject(1,model, "看门狗" );
+    addSubject(2,model, "spiflash" );
+    addSubject(3,model, "蜂鸣器" );
+    addSubject(4,model, "雷达测试" );
+    addSubject(5,model, "ICCID" );
+    addSubject(6,model, "网络质量" );
+    addSubject(7,model, "蓝牙MAC" );
+ #endif
+       int sum = 0;
 
-        }
-        else if( rev[2] == 0x10 && rev[3] == 0x02){//接收到下降指令，开始下降
+       sum = crc(rev+1,3+rev[3]);
+       if( sum != rev[4+rev[3]]){
+            qDebug("data error: %x %x\n",sum,rev[4+rev[3]]);
+            return;
+       }
+       if(rev[1] == 0x01 && rev[2] == 0x01){ //启动测试
 
-        }
-        else if( rev[2] == 0x10 && rev[3] == 0x11){//车位锁上升完成
+            emit TestSignal(0,0);
+             qDebug("wacht:====> %x \n",rev[4]);
+            if( rev[4] == 0x01){ //看门狗测试正常
+                emit TestSignal(1,0);
+            }
 
-        }
-        else if( rev[2] == 0x10 && rev[3] == 0x22){//车位锁下降完成
+       }
+       else if(rev[1] == 0x02 && rev[2] == 0x02){ //spi
+                if( rev[4] == 0x01 )
+                    emit TestSignal(2,0);
+                else
+                    emit TestSignal(2,1);
+       }
+       else if(rev[1] == 0x02 && rev[2] == 0x04){ //雷达
+           long data = (((rev[4]<<24)&0xff0000)|((rev[5]<<16)&0x00ff0000)|((rev[6]<<8)&0x0000ff00)|(rev[7]&0x0000ff));
+            qDebug("radar:%x %x %x %x\n",rev[4],rev[5],rev[6],rev[7]);
+            emit TestSignal(4,data);
+       }
+       else if(rev[1] == 0x01 && rev[2] == 0x02){ //网络质量
+            if( rev[4] == 0x01){ //联网中
+                emit TestSignal(6,1);
+            }
+            else if( rev[4] == 0x02){ //成功
+                emit TestSignal(61,rev[6]);
+            }
+            else if( rev[4] == 0x03){ //失败
+                emit TestSignal(62,rev[5]);
+            }
 
-        }
-        else if( rev[2] == 0x20 && rev[3] == 0x00){//车位锁处于下降状态
+       }
 
-        }
-        else if( rev[2] == 0x20 && rev[3] == 0x01){//车位锁处于上升状态
 
-        }
+       else if(rev[1] == 0x02 && rev[2] == 0x06){ //iccid
 
-        qDebug()<<"receive info success:"<<rev[2] << rev[3];
+            QByteArray byte;
+            byte = QByteArray((char *)rev+3,rev[3]);
+
+           emit stringSignal(5,byte);
+       }
+       else if(rev[1] == 0x03 && rev[2] == 0x03){ //mac
+            QByteArray byte;
+            byte = QByteArray((char *)rev+3,rev[3]);
+           emit stringSignal(7,byte);
+       }
+       qDebug("re:%x %x\n",rev[1],rev[2]);
         memset(rev,0,sizeof (rev));
     }
 }
