@@ -65,7 +65,7 @@ void MainWindow::interfaceStringShow(int i,QString data){
           ui->readSNlineEdit->setText(data);
   }
   else if( i == 44 ){
-            ui->readVersionlineEdit->setText(data);
+            ui->readVersionlineEdit->setText("产品型号:"+data.mid(0,2)+" 硬件版本:"+data.mid(2,2)+" 软件版本:"+data.mid(4,2) + +" 蓝牙版本:"+data.mid(6,2));
   }
 
 }
@@ -442,7 +442,7 @@ void MainWindow::on_writeImeipushButton_clicked()
     writedata[0] = 0xAC;
     writedata[1] = 0x02;
     writedata[2] = 0x07;
-    writedata[3] = bytes.size();
+    writedata[3] = length;
 
     for( int i = 0; i < bytes.size(); i++ ){
          writedata[4+i] = bytes.at(i);
@@ -465,8 +465,8 @@ void MainWindow::on_workpushButton_clicked()
     QByteArray bytes = data.toLatin1();
     //qDebug("signeal:%x %x\n",bytes.at(0),bytes.at(1));
   //  writeData()
-    if( ( bytes.size() != 1 || ( bytes.at(0) != 0x32 && bytes.at(0) != 0x33) )){
-         ui->worklineEdit->setText("数据内容错误只能写2/3");
+    if( ( bytes.size() != 1 || ( bytes.at(0) != 0x32 && bytes.at(0) != 0x33&&bytes.at(0) != 0x30 && bytes.at(0) != 0x31))){
+         ui->worklineEdit->setText("数据内容错误只能写0/1/2/3");
         return;
     }
     writedata.resize(7);
