@@ -30,9 +30,9 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>40</y>
+       <y>30</y>
        <width>681</width>
-       <height>211</height>
+       <height>321</height>
       </rect>
      </property>
      <property name="autoFillBackground">
@@ -66,10 +66,10 @@
    <widget class="QGroupBox" name="groupBox_2">
     <property name="geometry">
      <rect>
-      <x>770</x>
-      <y>30</y>
-      <width>461</width>
-      <height>231</height>
+      <x>780</x>
+      <y>80</y>
+      <width>481</width>
+      <height>571</height>
      </rect>
     </property>
     <property name="title">
@@ -345,94 +345,88 @@
       </item>
      </layout>
     </widget>
-   </widget>
-   <widget class="QWidget" name="horizontalLayoutWidget_13">
-    <property name="geometry">
-     <rect>
-      <x>780</x>
-      <y>320</y>
-      <width>221</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_15">
-     <item>
-      <widget class="QPushButton" name="writeSNPushButton">
-       <property name="text">
-        <string>写SN</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="writeSnlineEdit"/>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="horizontalLayoutWidget_14">
-    <property name="geometry">
-     <rect>
-      <x>1030</x>
-      <y>320</y>
-      <width>241</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_16">
-     <item>
-      <widget class="QPushButton" name="readSnpushButton">
-       <property name="text">
-        <string>查询SN</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="readSNlineEdit"/>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="horizontalLayoutWidget_15">
-    <property name="geometry">
-     <rect>
-      <x>790</x>
-      <y>390</y>
-      <width>211</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_17">
-     <item>
-      <widget class="QPushButton" name="writeImeipushButton">
-       <property name="text">
-        <string>写imei</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="writeImeilineEdit"/>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="horizontalLayoutWidget_16">
-    <property name="geometry">
-     <rect>
-      <x>1030</x>
-      <y>390</y>
-      <width>241</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_18">
-     <item>
-      <widget class="QPushButton" name="workpushButton">
-       <property name="text">
-        <string>写工作模式</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="worklineEdit"/>
-     </item>
-    </layout>
+    <widget class="QWidget" name="verticalLayoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>240</y>
+       <width>461</width>
+       <height>241</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_15">
+        <item>
+         <widget class="QPushButton" name="writeSNPushButton">
+          <property name="text">
+           <string>写SN</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="writeSnlineEdit"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_18">
+        <item>
+         <widget class="QPushButton" name="workpushButton">
+          <property name="text">
+           <string>写工作模式</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="worklineEdit"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_17">
+        <item>
+         <widget class="QPushButton" name="writeImeipushButton">
+          <property name="text">
+           <string>写imei</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="writeImeilineEdit"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_19">
+        <item>
+         <widget class="QPushButton" name="readVersionpushButton">
+          <property name="text">
+           <string>查询版本</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="readVersionlineEdit"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_16">
+        <item>
+         <widget class="QPushButton" name="readSnpushButton">
+          <property name="text">
+           <string>查询SN</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="readSNlineEdit"/>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">

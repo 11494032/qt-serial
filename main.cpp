@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     MainWindow w;
-    w.setWindowTitle("电机测试程序");
+    w.setWindowTitle("地锁功能测试");
  //   w.setSourceModel(createMailModel(&w));
     w.show();
 

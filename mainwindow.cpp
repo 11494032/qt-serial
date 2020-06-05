@@ -51,6 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     init();
 }
+
 void MainWindow::interfaceStringShow(int i,QString data){
    //qDebug("signeal:%x %s\n",i,(char)data);
   if( i == 5 ){ //iccid
@@ -58,35 +59,32 @@ void MainWindow::interfaceStringShow(int i,QString data){
          addParamItem(5,2,goodsModel,data);
    }
   if( i == 7 ){ //
-
-         QByteArray temp1 = data.toLatin1().toHex();
-         QByteArray temp2;
-             for(int i = 0; i < temp1.length()/2;i++)
-             {
-                 temp2 += temp1.mid(i*2,2) + "-";
-             }
-         addParamItem(7,2,goodsModel,temp2);
+         addParamItem(7,2,goodsModel,data);
    }
   else if( i == 41 ){
           ui->readSNlineEdit->setText(data);
   }
+  else if( i == 44 ){
+            ui->readVersionlineEdit->setText(data);
+  }
+
 }
 void MainWindow::interfaceShow(int i,long data){
   // qDebug("signeal:%x %lx\n",i,data);
-   if( i == 0 ){ //看门狗
+   if( i == 99 ){ //看门狗
     ui->startlabel->setText("开始测试");
     addParamItem(0,2,goodsModel,"成功");
    }
-   else if( i == 1 && data == 0){ //看门狗
+   else if( i == 1 && data == 1){ //看门狗
     addParamItem(1,2,goodsModel,"成功");
    // goodsModel->item(0, 2)->setForeground(QBrush(QColor(255, 0, 0)));
    }
    else if( i == 2 ){ //spi
-       if( data == 0){
+       if( data == 1){
             addParamItem(2,2,goodsModel,"成功");
        }
        else{
-       addParamItem(2,2,goodsModel,"失败");
+        addParamItem(2,2,goodsModel,"失败");
         goodsModel->item(0, 2)->setForeground(QBrush(QColor(255, 0, 0)));
        }
    }
@@ -218,9 +216,9 @@ void MainWindow::init()
     ui->treeView->setAlternatingRowColors(true);
     goodsModel = new QStandardItemModel(0, 4,this);
     ui->treeView->setColumnWidth(0,100);
-    ui->treeView->setColumnWidth(1,400);
-    ui->treeView->setColumnWidth(2,400);
-    ui->treeView->setColumnWidth(3,400);
+    ui->treeView->setColumnWidth(1,800);
+    ui->treeView->setColumnWidth(2,1300);
+    ui->treeView->setColumnWidth(3,800);
 
     ui->treeView->setModel(goodsModel);
     createSubjectModel(goodsModel);
@@ -252,7 +250,8 @@ void MainWindow:: createSubjectModel( QStandardItemModel *model )
     addSubject(5,model, "ICCID" );
     addSubject(6,model, "网络质量" );
     addSubject(7,model, "蓝牙MAC" );
-    addParamItem(6,3,goodsModel,"03H :联网失败：读卡失败; \n04H :联网失败：SOCKET失败;\n05H :联网失败：连接失败");
+    addParamItem(4,3,goodsModel,"1.无车站位: <1000000 正常\n2.有车站位:>=2000000为正常\n3.仅当1,2都正常时，雷达模块工作正常");
+    addParamItem(6,3,goodsModel,"联网失败：\n03H :读卡失败; \n04H :SOCKET失败;\n05H :连接失败");
 
 }
 void MainWindow::showClick(QModelIndex index)
@@ -394,8 +393,8 @@ void MainWindow::on_writeSNPushButton_clicked()
    writedata.resize(6+length);
    writedata[5+bytes.size()] = 0;
    writedata[0] = 0xAC;
-   writedata[1] = 0x03;
-   writedata[2] = 0x03;
+   writedata[1] = 0x02;
+   writedata[2] = 0x09;
    writedata[3] = bytes.size();
 
    for( int i = 0; i < bytes.size(); i++ ){
@@ -413,10 +412,10 @@ void MainWindow::on_readSnpushButton_clicked()
     data.resize(7);
     data[0] = 0xAC;
     data[1] = 0x03;
-    data[2] = 0x03;
+    data[2] = 0x01;
     data[3] = 0x01;
     data[4] = 0x01;
-    data[5] = 0x00;
+    data[5] = 0x02;
     data[6] = 0xCC;
     this->writeData(data);
 }
@@ -433,7 +432,7 @@ void MainWindow::on_writeImeipushButton_clicked()
     QByteArray bytes = data.toLatin1();
     //qDebug("signeal:%x %x\n",bytes.at(0),bytes.at(1));
   //  writeData()
-    if( bytes.size() != 16){
+    if( bytes.size() != 15){
          ui->writeImeilineEdit->setText("数据长度错误");
         return;
     }
@@ -441,8 +440,8 @@ void MainWindow::on_writeImeipushButton_clicked()
     writedata.resize(6+length);
     writedata[5+bytes.size()] = 0;
     writedata[0] = 0xAC;
-    writedata[1] = 0x03;
-    writedata[2] = 0x03;
+    writedata[1] = 0x02;
+    writedata[2] = 0x07;
     writedata[3] = bytes.size();
 
     for( int i = 0; i < bytes.size(); i++ ){
@@ -473,11 +472,26 @@ void MainWindow::on_workpushButton_clicked()
     writedata.resize(7);
     writedata[5+bytes.size()] = 0;
     writedata[0] = 0xAC;
-    writedata[1] = 0x03;
-    writedata[2] = 0x03;
+    writedata[1] = 0x02;
+    writedata[2] = 0x0A;
     writedata[3] = 0x01;
     writedata[4] = ( bytes.at(0) - '0');
     writedata[5] = (writedata[1]^writedata[2]^writedata[3]^writedata[4]);
     writedata[6] = 0xCC;
     this->writeData(writedata);
+}
+
+
+void MainWindow::on_readVersionpushButton_clicked()
+{
+    QByteArray data;
+    data.resize(7);
+    data[0] = 0xAC;
+    data[1] = 0x03;
+    data[2] = 0x02;
+    data[3] = 0x01;
+    data[4] = 0x01;
+    data[5] = 0x01;
+    data[6] = 0xCC;
+    this->writeData(data);
 }

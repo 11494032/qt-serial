@@ -64,6 +64,8 @@ private slots:
 
     void on_workpushButton_clicked();
 
+    void on_readVersionpushButton_clicked();
+
 private:
     void initActionsConnections();
     void showStatusMessage(const QString &message);
