@@ -147,11 +147,11 @@ void Console:: handle_data( const QByteArray data){
            }
        }
        else if(rev[1] == 0x03 && rev[2] == 0x01){ //read sn
-           //QByteArray byte;
-         //  byte = QByteArray((char *)rev+4,rev[3]);
-           char sn[32] = {0,};
-           memcpy(sn,rev+4,rev[3]);
-           emit stringSignal(41,sn);
+           QByteArray byte;
+           byte = QByteArray((char *)rev+4,rev[3]);
+           //char sn[32] = {0,};
+           //memcpy(sn,rev+4,rev[3]);
+           emit stringSignal(41,byte);
 
        }
        else if(rev[1] == 0x02 && rev[2] == 0x07){ //WRITE imei
@@ -172,7 +172,7 @@ void Console:: handle_data( const QByteArray data){
        }
        else if(rev[1] == 0x03 && rev[2] == 0x02){ //READ VERSION
            if( rev[4] == 0x01){ //success
-                char sbuf[12] = {0,};
+                char sbuf[24] = {0,};
                 sbuf[0] =  numtoAscii(( rev[4])>>4);
                 sbuf[1] = numtoAscii(( rev[4])&0x0f);
                 sbuf[2] = numtoAscii(( rev[5])>>4);
@@ -181,6 +181,10 @@ void Console:: handle_data( const QByteArray data){
                 sbuf[5] = numtoAscii(( rev[6])&0x0f);
                 sbuf[6] = numtoAscii(( rev[7])>>4);
                 sbuf[7] = numtoAscii(( rev[7])&0x0f);
+                sbuf[8] = numtoAscii(( rev[8])>>4);
+                sbuf[9] = numtoAscii(( rev[8])&0x0f);
+                sbuf[10] = numtoAscii(( rev[9])>>4);
+                sbuf[11] = numtoAscii(( rev[9])&0x0f);
                 emit stringSignal(44,sbuf);
            }
        }

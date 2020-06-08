@@ -62,10 +62,11 @@ void MainWindow::interfaceStringShow(int i,QString data){
          addParamItem(7,2,goodsModel,data);
    }
   else if( i == 41 ){
+          ui->readSNlineEdit->clear();
           ui->readSNlineEdit->setText(data);
   }
   else if( i == 44 ){
-            ui->readVersionlineEdit->setText("产品型号:"+data.mid(0,2)+" 硬件版本:"+data.mid(2,2)+" 软件版本:"+data.mid(4,2) + +" 蓝牙版本:"+data.mid(6,2));
+            ui->readVersionlineEdit->setText("产品型号:"+data.mid(0,2)+" 硬件版本:"+data.mid(2,2)+" 软件版本:"+data.mid(4,2) +" 蓝牙版本:"+data.mid(6,2)+" LTE版本:"+data.mid(8,2)+"."+data.mid(10,2));
   }
 
 }
