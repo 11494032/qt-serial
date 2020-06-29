@@ -185,6 +185,8 @@ void Console:: handle_data( const QByteArray data){
                 sbuf[9] = numtoAscii(( rev[8])&0x0f);
                 sbuf[10] = numtoAscii(( rev[9])>>4);
                 sbuf[11] = numtoAscii(( rev[9])&0x0f);
+                sbuf[12] = numtoAscii(( rev[10])>>4);
+                sbuf[13] = numtoAscii(( rev[11])&0x0f);
                 emit stringSignal(44,sbuf);
            }
        }
